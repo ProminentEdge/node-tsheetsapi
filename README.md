@@ -31,7 +31,7 @@ Instead, the `.list()` and `.delete()` methods do not require a data field, you 
 ```
 var TSheetsApi = require('tsheetsapi');
 
-var tapi = TSheetsApi({
+var tapi = new TSheetsApi({
         	bearerToken : '<your-access-token>'
            });
 ```
