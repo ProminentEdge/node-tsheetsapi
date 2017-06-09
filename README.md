@@ -1,11 +1,28 @@
 # node-tsheetsapi
-(Unofficial) TSheets node.js API Helper.
+(Unofficial) Simple TSheets node.js API Helper.
 
 **Features**: 
 
 - Support Bearer Token authentication
 - List / Add / Update or Delete on (almost) any endpoint
 - Supports q promises
+
+## Supported endpoints
+
+- `/users`
+- `/groups`
+- `/jobcodes`
+- `/jobcode_assignments`
+- `/timesheets`
+- `/timesheets_deleted`
+- `/geolocations`
+- `/reports`
+- `/last_modfied`
+- `/notifications`
+- `/reminders`
+- `/schedule_calendars`
+- `/schedule_events`
+- `/managed_clients`
 
 ## Install 
 ```
