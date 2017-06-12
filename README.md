@@ -4,6 +4,7 @@
 **Features**: 
 
 - Support Bearer Token authentication
+- Supports pagination
 - List / Add / Update or Delete on (almost) any endpoint
 - Supports q promises
 
