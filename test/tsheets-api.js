@@ -62,4 +62,13 @@ describe("TSheets API", function(){
               });
     });
 
+    it("gets all user", function(){
+      
+      return tsheets.users().list()
+              .then(function(res){
+                expect(res).to.be.an('array');
+              })
+
+    });
+
 });

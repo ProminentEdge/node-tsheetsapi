@@ -100,34 +100,53 @@ TSheetsApi.prototype.build = function(endpoint, method, params){
     },
     json : true
   }
+  
+  if(method === 'GET' && (typeof params === "undefined" || !params.hasOwnProperty('page'))){
+    params = typeof params === "undefined" ? {} : params;
+    params['page'] = 1;
+  }
 
   if(method === 'GET' || method === 'DELETE') queryObject['qs'] = params;
 
   if(method === 'POST' || method === 'PUT') queryObject['body'] = params;
+  
+  var result = [];
 
-  request(queryObject, function(err, res, body){
-    if(err){
-      console.log(err);
-    } 
-
-    if (body.hasOwnProperty('error')){
-      throw new TSheetsApiResponseError(body.error.message, body.error.code);
-    } 
+  function doRequest(queryObject){
     
-    var entries = body['results'][endpoint],
-        result = [];
+    request(queryObject, function(err, res, body){
+      if(err){
+        console.log(err);
+      } 
 
-    for(var key in entries){
+      if (body.hasOwnProperty('error')){
+        throw new TSheetsApiResponseError(body.error.message, body.error.code);
+      } 
 
-      if(!entries.hasOwnProperty(key)) continue;
+      var entries = body['results'][endpoint];
 
-      result.push(entries[key]);
+      for(var key in entries){
 
-    }
+        if(!entries.hasOwnProperty(key)) continue;
 
-    deferred.resolve(result);
+        result.push(entries[key]);
 
-  });
+      }
+
+      if(body['more'] && method === 'GET'){
+
+        params['page'] = params['page'] + 1;
+        queryObject['qs'] = params;
+        return doRequest(queryObject);
+      }
+
+      return deferred.resolve(result);
+
+    });
+
+  }
+
+  doRequest(queryObject);
 
   return deferred.promise;
 
