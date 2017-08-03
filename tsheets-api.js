@@ -1,8 +1,6 @@
 const request = require('request');
 const url = require('url');
-const TSheetsApiResponseError = require('./errors/response-error');
 const TSheetsApiError = require('./errors/tsheetsapi-error');
-const RequestError = require('./errors/request-error');
 
 /**
  * A simple TSheetsApi handler that makes use of the Async/Await featues.. 
@@ -131,11 +129,11 @@ class TSheetsApi{
       request(queryObject, (err, res, body) => {
 
         if(err){
-          throw new RequestError(err);
+          return reject([err, 500]);
         } 
 
         if (body.hasOwnProperty('error')){
-          throw new TSheetsApiResponseError(body.error.message, body.error.code);
+          return reject([body.error.message, body.error.code]);
         } 
 
         const entries = body['results'][endpoint];
