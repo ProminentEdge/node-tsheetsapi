@@ -83,7 +83,7 @@ const params = {
   }]
 };
 
-let res = tapi.schedule_events.add(params);
+let res = await tapi.schedule_events.add(params);
 console.log(res.data);
 
 ```
