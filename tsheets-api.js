@@ -129,11 +129,11 @@ class TSheetsApi{
       request(queryObject, (err, res, body) => {
 
         if(err){
-          return reject([err, 500]);
+          return Promise.reject([err, 500]);
         } 
 
         if (body.hasOwnProperty('error')){
-          return reject([body.error.message, body.error.code]);
+          return Promise.reject([body.error.message, body.error.code]);
         } 
 
         const entries = body['results'][endpoint];
