@@ -6,7 +6,7 @@
 - Support Bearer Token authentication
 - Supports pagination
 - List / Add / Update or Delete on (almost) any endpoint
-- Supports q promises
+- Based on async/await  
 
 ## Supported endpoints
 
@@ -47,28 +47,34 @@ Instead, the `.list()` and `.delete()` methods do not require a data field, you 
 
 ### Authentication
 ```
-var TSheetsApi = require('tsheetsapi');
+const TSheetsApi = require('tsheetsapi');
 
-var tapi = new TSheetsApi({
+const tapi = new TSheetsApi({
         	bearerToken : '<your-access-token>'
            });
 ```
-### List users
+### Paginate through all users
 ```
-tapi.users().list()
-    .then(console.log)
+let res = await tapi.users().list();
+
+while(res.next){
+  
+  console.log(res.data)
+  await res = res.next; 
+    
+}
 ```
 
 ### List jobcodes
 ```
-tapi.jobcodes().list()
-    .then(console.log);
+let res = await tapi.jobcodes().list()
+console.log(res.data);
 ```
 
 ### Add schedule event
 ```
 
-var params = {
+const params = {
   data : [{
         schedule_calendar_id : '<your-id>',
         start : '2017-06-12T15:19:21+00:00',
@@ -77,8 +83,8 @@ var params = {
   }]
 };
 
-tapi.schedule_events.add(params)
-    .then(console.log);
+let res = tapi.schedule_events.add(params);
+console.log(res.data);
 
 ```
 
