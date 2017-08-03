@@ -1,9 +1,9 @@
-'use strict';
+class TSheetsApiError extends Error{
+  constructor(...args){
+    super(...args)
+    Error.captureStackTrace(this, TSheetsApiError);
+  }
 
-module.exports = function TSheetsApiError(message, code) {
-  Error.captureStackTrace(this, this.constructor);
-  this.name = this.constructor.name;
-  this.message = message;
-};
+}
 
-require('util').inherits(module.exports, Error);
+module.exports = TSheetsApiError;
