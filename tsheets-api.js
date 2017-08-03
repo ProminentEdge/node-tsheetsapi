@@ -124,40 +124,54 @@ class TSheetsApi{
    */ 
   async doRequest(queryObject, endpoint){
 
-    return new Promise((resolve, reject) => {
 
-      request(queryObject, (err, res, body) => {
+    try{
+      var [data, hasNext] = await new Promise((resolve, reject) => {
 
-        if(err){
-          return Promise.reject([err, 500]);
-        } 
+        request(queryObject, (err, res, body) => {
 
-        if (body.hasOwnProperty('error')){
-          return Promise.reject([body.error.message, body.error.code]);
-        } 
+          if(err){
+            return reject([err, 500]);
+          } 
 
-        const entries = body['results'][endpoint];
-        let result = [];
+          if (body.hasOwnProperty('error')){
+            return reject([body.error.message, body.error.code]);
+          } 
 
-        for(let key in entries){
+          const entries = body['results'][endpoint];
 
-          if(!entries.hasOwnProperty(key)) continue;
+          let result = [];
 
-          result.push(entries[key]);
+          for(let key in entries){
 
-        }
+            if(!entries.hasOwnProperty(key)) continue;
 
-        if(body['more'] && queryObject.method === 'GET'){
+            result.push(entries[key]);
 
-          queryObject['qs']['page'] = queryObject['qs']['page'] + 1;
-          resolve({data: result, next: this.doRequest(queryObject, endpoint)});
-        }
+          }
 
-        return resolve({data:result, next: null});
+          resolve([result, body["more"]]);
+
+
+        });
 
       });
 
-    });
+    }catch(e){
+      return Promise.reject(e);
+    }
+
+
+    if(hasNext && queryObject["method"] === 'GET'){
+
+      queryObject['qs']['page'] = queryObject['qs']['page'] + 1;
+      return Promise.resolve({data:data, next: this.doRequest(queryObject, endpoint)});
+
+    }
+
+    return Promise.resolve({data:data, next:null});
+
+
 
   }
 
