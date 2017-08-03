@@ -5,7 +5,7 @@ const TSheetsApiError = require('./errors/tsheetsapi-error');
 const RequestError = require('./errors/request-error');
 
 /**
- * A simple TSheetsApi handler that supports promises. 
+ * A simple TSheetsApi handler that makes use of the Async/Await featues.. 
  * Supports almost any endpoint and follows the TSheets method nomenclature.
  * @param {object} params A init object that contains your bearerToken and optionally allows to set the API version & url used. 
  */
@@ -82,7 +82,6 @@ class TSheetsApi{
   }
 
 
-
   /**
    * Build request to API and execute it. 
    * @param {string} endpoint Can be one of the support TSheets endpoint such as 'users', 'jobcodes' or 'timesheets'
@@ -115,8 +114,18 @@ class TSheetsApi{
 
   }
 
+  /**
+   * Perform a request. Pagination is enabled by 
+   * @param {object} queryObject The query parameters.
+   * @param {string} endpoint The relevant endpoint.
+   * @returns {object} res 
+   * {
+   *    data : [The response data gathered from TSheets],
+   *    next : [null or a Promise to get the next batch]
+   * }
+   */ 
   async doRequest(queryObject, endpoint){
-    
+
     return new Promise((resolve, reject) => {
 
       request(queryObject, (err, res, body) => {
@@ -128,7 +137,7 @@ class TSheetsApi{
         if (body.hasOwnProperty('error')){
           throw new TSheetsApiResponseError(body.error.message, body.error.code);
         } 
-        
+
         const entries = body['results'][endpoint];
         let result = [];
 
@@ -145,18 +154,16 @@ class TSheetsApi{
           queryObject['qs']['page'] = queryObject['qs']['page'] + 1;
           resolve({data: result, next: this.doRequest(queryObject, endpoint)});
         }
-      
-        return resolve({data:result, next: null});
 
-        });
+        return resolve({data:result, next: null});
 
       });
 
-    }
-
-
+    });
 
   }
 
+}
 
-  module.exports = TSheetsApi;
+
+module.exports = TSheetsApi;
