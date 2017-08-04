@@ -2,6 +2,11 @@ const request = require('request');
 const url = require('url');
 const TSheetsApiError = require('./errors/tsheetsapi-error');
 
+function sleep(s = 0) {
+  return new Promise(r => setTimeout(r, s * 1000));
+}
+
+
 /**
  * A simple TSheetsApi handler that makes use of the Async/Await featues.. 
  * Supports almost any endpoint and follows the TSheets method nomenclature.
