@@ -168,7 +168,7 @@ class TSheetsApi{
 
       if(parseInt(code) === 429){
         console.log("Got 'Too many requests' from TSheets. Let's wait 2min until next try...");
-        sleep(120);
+        await sleep(120);
         return await this.doRequest(queryObject, endpoint);
 
       }
