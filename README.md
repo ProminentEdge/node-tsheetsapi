@@ -26,7 +26,7 @@
 - `/managed_clients`
 
 ## Install 
-```
+```bash
 npm install tsheetsapi --save
 ```
 
@@ -36,9 +36,9 @@ All the endpoints are named exactly like in the [TSheets docs](https://developer
 
 The `.add()` and `.update()` methods need a data field in the parameters object:
 
-```
+```json
 {
-  data : [{}, {}, ...]
+  "data" : [{}, {}, ...]
 }
 ```
 
@@ -46,7 +46,7 @@ Instead, the `.list()` and `.delete()` methods do not require a data field, you 
 
 
 ### Authentication
-```
+```js
 const TSheetsApi = require('tsheetsapi');
 
 const tapi = new TSheetsApi({
@@ -54,7 +54,7 @@ const tapi = new TSheetsApi({
            });
 ```
 ### Paginate through all users
-```
+```js
 let res = await tapi.users().list();
 
 while(res.next){
@@ -66,13 +66,13 @@ while(res.next){
 ```
 
 ### List jobcodes
-```
+```js
 let res = await tapi.jobcodes().list()
 console.log(res.data);
 ```
 
 ### Add schedule event
-```
+```js
 
 const params = {
   data : [{
