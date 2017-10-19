@@ -1,6 +1,6 @@
 {
   "name": "tsheetsapi",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A simple TSheets API helper.",
   "main": "tsheets-api.js",
   "directories": {
