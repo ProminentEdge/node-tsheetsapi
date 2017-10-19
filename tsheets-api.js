@@ -131,7 +131,7 @@ class TSheetsApi{
 
 
     try{
-      var [data, hasNext] = await new Promise((resolve, reject) => {
+      var [data, supplementalData, hasNext] = await new Promise((resolve, reject) => {
 
         request(queryObject, (err, res, body) => {
 
@@ -145,19 +145,14 @@ class TSheetsApi{
 
           const entries = body['results'][endpoint];
 
-          let result = [];
+          let result = Object.keys(entries).map(key => entries[key]);
 
-          for(let key in entries){
-
-            if(!entries.hasOwnProperty(key)) continue;
-
-            result.push(entries[key]);
-
+          if(body.hasOwnProperty("supplemental_data")){
+              return resolve([result, body["supplemental_data"], body["more"]]);
           }
 
-          resolve([result, body["more"]]);
-
-
+          resolve([result, null, body["more"]]);
+          
         });
 
       });
@@ -180,15 +175,15 @@ class TSheetsApi{
     if(hasNext && queryObject["method"] === 'GET'){
 
       queryObject['qs']['page'] = queryObject['qs']['page'] + 1;
-      return Promise.resolve({data:data, next: this.doRequest(queryObject, endpoint)});
+      return Promise.resolve({data:data, supplemental_data: supplementalData, next: this.doRequest(queryObject, endpoint)});
 
     }
 
-    return Promise.resolve({data:data, next:null});
-
+    return Promise.resolve({data:data, supplemental_data: supplementalData, next:null});
 
 
   }
+
 
 }
 

@@ -89,8 +89,9 @@ describe("TSheets API", () => {
     async function testFunction(done){
       let res = await tsheets.users().list();
 
-      while(res.next){
+      while(res && res.data.length){
         expect(res.data).to.be.an('array');
+        expect(res.supplemental_data).to.be.an('object');
         res = await res.next;
       }
 

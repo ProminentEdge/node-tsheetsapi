@@ -5,6 +5,7 @@
 
 - Support Bearer Token authentication
 - Supports pagination
+- Supports supplemental data
 - List / Add / Update or Delete on (almost) any endpoint
 - Based on async/await  
 
@@ -57,9 +58,10 @@ const tapi = new TSheetsApi({
 ```js
 let res = await tapi.users().list();
 
-while(res.next){
+while(res && res.data.length){
   
   console.log(res.data)
+  console.log(res.supplemental_data)
   await res = res.next; 
     
 }
