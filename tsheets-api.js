@@ -14,6 +14,38 @@ function sleep(s = 0) {
  */
 
 class TSheetsApi{
+  
+  createEndpoint(el, return_object_name) {
+    // Specialty named routes are assumed to only support HTTP POST via 'get' method
+    if (return_object_name) {
+      TSheetsApi.prototype[el.replace(/\//g, '_')] = () => {
+        return {
+          get : async (params) => {
+            return await this.build(el, 'POST', params, return_object_name);
+          }
+        }
+      }
+    }
+    else {
+      TSheetsApi.prototype[el] = () => {
+        return {
+          list : async (params) => {
+            return await this.build(el, 'GET', params);
+          },
+          add  : async (params) => {
+            return await this.build(el, 'POST', params);
+          },
+          update : async (params) => {
+            return await this.build(el, 'PUT', params);
+          },
+          delete : async (params) => {
+            return await this.build(el, 'DELETE', params);
+          }
+        }
+
+      };
+    }
+  }
 
   constructor(params){
 
@@ -51,35 +83,44 @@ class TSheetsApi{
       'timesheets',
       'timesheets_deleted',
       'geolocations',
-      'reports',
       'last_modfied',
       'notifications',
       'reminders',
       'schedule_calendars', 
       'schedule_events',
-      'managed_clients'];
+      'managed_clients',
+      {
+        'reports': [
+          {
+            name: 'current_totals',
+            return_object_name: 'current_totals_report'
+          },
+          {
+            name: 'payroll',
+            return_object_name: 'payroll_report'
+          },
+          {
+            name: 'payroll_by_jobcode',
+            return_object_name: 'payroll_by_jobcode_report'
+          },
+          {
+            name: 'project',
+            return_object_name: 'project_report'
+          }
+        ]
+      }];
 
       endpoints.forEach( el => {
-
-        TSheetsApi.prototype[el] = () => {
-
-          return {
-            list : async (params) => {
-              return await this.build(el, 'GET', params);
-            },
-            add  : async (params) => {
-              return await this.build(el, 'POST', params);
-            },
-            update : async (params) => {
-              return await this.build(el, 'PUT', params);
-            },
-            delete : async (params) => {
-              return await this.build(el, 'DELETE', params);
-            }
-          }
-
-        };
-
+        if (typeof el === 'object') {
+          Object.keys(el).forEach( i => {
+            el[i].forEach( j => {
+              this.createEndpoint(`${i}/${j.name}`, j.return_object_name);
+            });
+          });
+        }
+        else {
+          this.createEndpoint(el);
+        }
       });
 
   }
@@ -92,7 +133,7 @@ class TSheetsApi{
    * @param {object} params Object that contains either the query string parameters or request body
    * @returns {Promise} 
    */
-  async build(endpoint, method, params) {
+  async build(endpoint, method, params, return_name) {
 
     let queryObject = {
 
@@ -113,7 +154,7 @@ class TSheetsApi{
 
     if(method === 'POST' || method === 'PUT') queryObject['body'] = params;
 
-    return await this.doRequest(queryObject, endpoint);
+    return await this.doRequest(queryObject, endpoint, return_name);
 
   }
 
@@ -127,7 +168,7 @@ class TSheetsApi{
    *    next : [null or a Promise to get the next batch]
    * }
    */ 
-  async doRequest(queryObject, endpoint){
+  async doRequest(queryObject, endpoint, return_name){
 
 
     try{
@@ -143,7 +184,7 @@ class TSheetsApi{
             return reject([body.error.message, body.error.code]);
           } 
 
-          const entries = body['results'][endpoint];
+          const entries = body['results'][return_name || endpoint];
 
           let result = Object.keys(entries).map(key => entries[key]);
 
