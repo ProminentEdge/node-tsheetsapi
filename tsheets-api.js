@@ -83,7 +83,7 @@ class TSheetsApi{
       'timesheets',
       'timesheets_deleted',
       'geolocations',
-      'last_modfied',
+      'last_modified_timestamps',
       'notifications',
       'reminders',
       'schedule_calendars', 
@@ -145,7 +145,7 @@ class TSheetsApi{
       json : true
     }
 
-    if(method === 'GET' && (typeof params === "undefined" || !params.hasOwnProperty('page'))){
+    if(method === 'GET' && (typeof params === "undefined" || !params.hasOwnProperty('page')) && endpoint != 'last_modified_timestamps'){
       params = typeof params === "undefined" ? {} : params;
       params['page'] = 1;
     }
